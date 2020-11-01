@@ -24,16 +24,12 @@ class BlockCryptor {
             B = wrap(rotator.rol(B ^ A, A) + this.subKeys[2 * i + 1], this.wordSize);
         }
 
-        console.log(A, B);
-
         return this.toBuffer(A, B);
     }
 
     decrypt(block) {
         let [A, B] = this.toWords(block);
         const rotator = bitwiseRotation(this.wordSize);
-
-        console.log(A, B);
 
         for (let i = this.rounds; i >= 1; i--) {
             B = rotator.ror(wrap(B - this.subKeys[2 * i + 1], this.wordSize), A) ^ A;
@@ -63,9 +59,3 @@ class BlockCryptor {
         return buffer;
     }
 }
-
-let cryptor = new BlockCryptor(Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]), 1, 32);
-let buffer = cryptor.encrypt(Buffer.from([2, 0, 0, 0, 2, 0, 0, 0]));
-let buffer1 = cryptor.decrypt(buffer);
-console.log(buffer)
-console.log(buffer1)
