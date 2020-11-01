@@ -1,41 +1,37 @@
 const bitwiseRotation = require('bitwise-rotation').default;
 
-console.log(bitwiseRotation)
-
-const {
-    ofSize,
-    UInt16,
-    UInt32,
-} = require('../math/Integer');
-
 const PQ = {
     16: {
-        P: UInt16(0xb7e1),
-        Q: UInt16(0x9e37)
+        P: 0xb7e1,
+        Q: 0x9e37
     },
     32: {
-        P: UInt32(0xb7e15163),
-        Q: UInt32(0x9e3779b9)
+        P: 0xb7e15163,
+        Q: 0x9e3779b9
     }
+}
+
+const wrap = (number, wordSize) => {
+    return number % (2 ** wordSize);
 }
 
 const readWord = (key, position, wordSize) => {
     switch (wordSize) {
         case 16:
-            return UInt16(key.readUInt16LE(position));
+            return key.readUInt16LE(position);
         case 32:
-            return UInt32(key.readUInt32LE(position));
+            return key.readUInt32LE(position);
     }
 }
 
 const toWords = (key, wordSize) => {
-    const words = [];
-    let nextPosition = 0;
     const byteWordSize = wordSize / 8;
+    const size = key.length / byteWordSize;
+    const words = new Array(size);
 
-    while (nextPosition < key.length) {
-        nextPosition += byteWordSize;
-        words.push(readWord(key, nextPosition - byteWordSize, wordSize))
+    for (let i = 0; i < size; i++) {
+        const position = i * byteWordSize;
+        words[i] = readWord(key, position, wordSize);
     }
 
     return words;
@@ -47,12 +43,11 @@ const getSubKeyInitializers = (rounds, wordSize) => {
 
     const P = PQ[wordSize].P;
     const Q = PQ[wordSize].Q;
-    const toInteger = ofSize(wordSize);
 
     subKeyInitializers[0] = P;
 
     for (let i = 1; i < size; i++) {
-        subKeyInitializers[i] = toInteger(subKeyInitializers[i - 1] + Q)
+        subKeyInitializers[i] = wrap(subKeyInitializers[i - 1] + Q, wordSize);
     }
 
     return subKeyInitializers;
@@ -69,11 +64,10 @@ const mixSubKeys = (keyWords, subKeyInitializers, wordSize) => {
     let j = 0;
 
     const rotator = bitwiseRotation(wordSize);
-    const toInteger = ofSize(wordSize);
 
     for (let k = 0; k < 3 * Math.max(c, t); k++) {
-        A = S[i] = toInteger(rotator.rol(toInteger(toInteger(S[i] + A) + B), 3));
-        B = L[j] = toInteger(rotator.rol(toInteger(toInteger(L[j] + A) + B), toInteger(A + B)));
+        A = S[i] = rotator.rol(wrap(S[i] + A + B, wordSize), 3);
+        B = L[j] = rotator.rol(wrap(L[j] + A + B, wordSize), wrap(A + B, wordSize));
         i = (i + 1) % t;
         j = (j + 1) % c;
     }
@@ -84,7 +78,6 @@ const mixSubKeys = (keyWords, subKeyInitializers, wordSize) => {
 const toSubKeys = (key, rounds, wordSize) => {
     const keyWords = toWords(key, wordSize);
     const subKeyInitializers = getSubKeyInitializers(rounds, wordSize);
-
     return mixSubKeys(keyWords, subKeyInitializers, wordSize);
 }
 
