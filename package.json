@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bitwise-rotation": "^1.0.1"
+    "bitwise-rotation": "^1.0.1",
+    "stream-to-promise": "^3.0.0"
   }
 }

@@ -1,7 +1,7 @@
 const bitwiseRotation = require('bitwise-rotation').default;
 
 const readWord = require('./readWord');
-const wrap = require('../math/wrap');
+const wrap = require('../../math/wrap');
 
 const PQ = {
     16: {

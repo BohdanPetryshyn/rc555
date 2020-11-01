@@ -1,7 +1,7 @@
 const toSubKeys = require('./toSubKeys');
 const readWord = require('./readWord');
 const writeWord = require('./writeWord');
-const wrap = require('../math/wrap');
+const wrap = require('../../math/wrap');
 const bitwiseRotation = require('bitwise-rotation').default;
 
 
