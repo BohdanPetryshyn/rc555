@@ -1,5 +1,8 @@
 const bitwiseRotation = require('bitwise-rotation').default;
 
+const readWord = require('./readWord');
+const wrap = require('../math/wrap');
+
 const PQ = {
     16: {
         P: 0xb7e1,
@@ -8,19 +11,6 @@ const PQ = {
     32: {
         P: 0xb7e15163,
         Q: 0x9e3779b9
-    }
-}
-
-const wrap = (number, wordSize) => {
-    return number % (2 ** wordSize);
-}
-
-const readWord = (key, position, wordSize) => {
-    switch (wordSize) {
-        case 16:
-            return key.readUInt16LE(position);
-        case 32:
-            return key.readUInt32LE(position);
     }
 }
 
