@@ -5,7 +5,7 @@ const wrap = require('../math/wrap');
 const bitwiseRotation = require('bitwise-rotation').default;
 
 
-class BlockEncryptor {
+class BlockCryptor {
     constructor(key, rounds, wordSize) {
         this.subKeys = toSubKeys(key, rounds, wordSize);
         this.rounds = rounds;
@@ -24,7 +24,26 @@ class BlockEncryptor {
             B = wrap(rotator.rol(B ^ A, A) + this.subKeys[2 * i + 1], this.wordSize);
         }
 
-        console.log(this.toBuffer(A, B))
+        console.log(A, B);
+
+        return this.toBuffer(A, B);
+    }
+
+    decrypt(block) {
+        let [A, B] = this.toWords(block);
+        const rotator = bitwiseRotation(this.wordSize);
+
+        console.log(A, B);
+
+        for (let i = this.rounds; i >= 1; i--) {
+            B = rotator.ror(wrap(B - this.subKeys[2 * i + 1], this.wordSize), A) ^ A;
+            A = rotator.ror(wrap(A - this.subKeys[2 * i], this.wordSize), B) ^ B;
+        }
+
+        B = wrap(B - this.subKeys[1], this.wordSize);
+        A = wrap(A - this.subKeys[0], this.wordSize);
+
+        return this.toBuffer(A, B);
     }
 
     toWords(block) {
@@ -45,4 +64,8 @@ class BlockEncryptor {
     }
 }
 
-new BlockEncryptor(Buffer.from([1, 1, 1, 1, 1, 1, 1, 1]), 16, 16).encrypt(Buffer.from([255, 2570, 1, 0, 0, 0, 0, 0]))
+let cryptor = new BlockCryptor(Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]), 1, 32);
+let buffer = cryptor.encrypt(Buffer.from([2, 0, 0, 0, 2, 0, 0, 0]));
+let buffer1 = cryptor.decrypt(buffer);
+console.log(buffer)
+console.log(buffer1)
