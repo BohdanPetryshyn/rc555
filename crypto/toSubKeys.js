@@ -14,14 +14,24 @@ const PQ = {
     }
 }
 
+const completeKey = (key, wordSize) => {
+    const byteWordSize = wordSize / 8;
+    const keyIncompleteness = byteWordSize - key.length % byteWordSize;
+
+    return keyIncompleteness === 0
+        ? key
+        : Buffer.concat([key, Buffer.alloc(keyIncompleteness)]);
+}
+
 const toWords = (key, wordSize) => {
     const byteWordSize = wordSize / 8;
-    const size = key.length / byteWordSize;
+    const completedKey = completeKey(key, wordSize);
+    const size = completedKey.length / byteWordSize;
     const words = new Array(size);
 
     for (let i = 0; i < size; i++) {
         const position = i * byteWordSize;
-        words[i] = readWord(key, position, wordSize);
+        words[i] = readWord(completedKey, position, wordSize);
     }
 
     return words;
