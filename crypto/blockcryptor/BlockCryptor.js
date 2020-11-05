@@ -59,3 +59,5 @@ class BlockCryptor {
         return buffer;
     }
 }
+
+module.exports = BlockCryptor;
