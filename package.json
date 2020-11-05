@@ -12,6 +12,10 @@
   "dependencies": {
     "bitwise-rotation": "^1.0.1",
     "buffer-xor": "^2.0.2",
+    "minimist": "^1.2.5",
     "stream-to-promise": "^3.0.0"
+  },
+  "bin": {
+    "rc555": "rc555.js"
   }
 }
