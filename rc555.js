@@ -13,9 +13,9 @@ const rounds = argv['r'] || 128;
 const wordSize = argv['w'] || 32;
 
 switch (command) {
-    case 'encrypt':
-        encrypt({argv, keySize, rounds, wordSize});
-        break;
-    default:
-        console.log(`Unknown command "${command}".`);
+  case 'encrypt':
+    encrypt({ argv, keySize, rounds, wordSize });
+    break;
+  default:
+    console.log(`Unknown command "${command}".`);
 }
